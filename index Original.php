@@ -46,7 +46,7 @@
 		exit;
 	});
 
-	$app->get('/Admin/logout', function(){
+	$app->get('/Admin/logout', function() {
 
 		User::logout();
 
@@ -62,55 +62,65 @@
 
 		$page = new PageAdmin();
 		
-		$page->setTpl("users", array(
-			"users"=>$users
-		));
+		$page->setTpl("users", array("users"=>$users));
 
 	});
 
-	$app->get("/Admin/users/create", function() {
+	$app->get("/Admin/users/create", function(){
 
-		User::verifyLogin();
-	
+		/*User::verifyLogin();
+
 		$page = new PageAdmin();
-	
-		$page->setTpl("users-create");
-	
+		
+		$page->setTpl("users-create");*/
+		User::verifyLogin();
+
+		$user = new User();
+
+		$_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
+
+		$_POST['despassword'] = password_hash($_POST["despassword"], PASSWORD_DEFAULT, [
+
+		"cost"=>12
+
+		]);
+
+		$user->setData($_POST);
+
+		$user->save();
+
+		header("Location: /Admin/users");
+		exit;
+
 	});
-	
 
 	$app->get("/Admin/users/:iduser/delete", function($iduser){
 
-		User::verifyLogin();
-
+		User::verifyLogin();		
 	});
 
-	$app->get('/admin/users/:iduser', function($iduser) {
-		
-		User::verifyLogin();
-	 
-		$user = new User();
-	 
-		$user->get((int)$iduser);
-	 
-		$page = new PageAdmin();
-		$page->setTpl("users-update", array(
-			"user" => $user->getValues()
-		));
+	$app->get("/Admin/users/:iduser", function($iduser){
 
+		User::verifyLogin();
+
+		$page = new PageAdmin();
 		
+		$page->setTpl("users-update");
+
 	});
 
 	$app->post("/Admin/users/create", function(){
 
-		User::verifyLogin();
+		User::verifyLogin();		
 
 	});
 
-	$app->post("/Admin/users/:iduser", function($iduser) {
+	$app->post("/Admin/users/:iduser", function($iduser){
 
 		User::verifyLogin();		
-	
-	});
+
+	});	
 
 	$app->run();
+
+ ?>
